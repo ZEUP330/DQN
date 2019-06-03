@@ -1,5 +1,5 @@
 # Deep Q Network
-
+[OpenAI-Baselines]("https://arztsamuel.github.io/en/blogs/2018/Gym-and-Baselines-on-Windows.html")
 ## DRL
 原因：在普通的Q-learning中，当状态和动作空间是离散且维数不高时可使用Q-Table储存每个状态动作对的Q值，而当状态和动作空间是高维连续时，使用Q-Table不现实。
 
@@ -16,12 +16,12 @@ DL的样本独立；RL前后state状态相关；
 DL目标分布固定；RL的分布一直变化，比如你玩一个游戏，一个关卡和下一个关卡的状态分布是不同的，所以训练好了前一个关卡，下一个关卡又要重新训练；
 过往的研究表明，使用非线性网络表示值函数时出现不稳定等问题。
 
-##DQN解决问题方法
+## DQN解决问题方法
 通过Q-Learning使用reward来构造标签（对应问题1）
 通过experience replay（经验池）的方法来解决相关性及非静态分布问题（对应问题2、3）
 使用一个CNN（MainNet）产生当前Q值，使用另外一个CNN（Target）产生Target Q值（对应问题4）
 
-###构造标签
+### 构造标签
 前面提到DQN中的CNN作用是对在高维且连续状态下的Q-Table做函数拟合，而对于函数优化问题，监督学习的一般方法是先确定Loss Function，然后求梯度，使用随机梯度下降等方法更新参数。DQN则基于Q-Learning来确定Loss Function。
 
 Q-Learning 
@@ -41,31 +41,31 @@ TargetQ=r+γmax_a′Q(s′,a′;θ)
 
 接下来，求 L(θ) 关于 θ 的梯度，使用SGD等方法更新网络参数 θ。
 
-###经验池（experience replay）
+### 经验池（experience replay）
 经验池的功能主要是解决相关性及非静态分布问题。具体做法是把每个时间步agent与环境交互得到的转移样本 (st,at,rt,st+1)(st,at,rt,st+1) 储存到回放记忆单元，要训练时就随机拿出一些（minibatch）来训练。（其实就是将游戏的过程打成碎片存储，训练时随机抽取就避免了相关性问题）
 
-###目标网络
+### 目标网络
 在Nature 2015版本的DQN中提出了这个改进，使用另一个网络（这里称为TargetNet）产生Target Q值。具体地，Q(s,a;θi)Q(s,a;θi) 表示当前网络MainNet的输出，用来评估当前状态动作对的值函数；Q(s,a;θ−i)Q(s,a;θi−) 表示TargetNet的输出，代入上面求 TargetQTargetQ 值的公式中得到目标Q值。根据上面的Loss Function更新MainNet的参数，每经过N轮迭代，将MainNet的参数复制给TargetNet。
 
 引入TargetNet后，再一段时间里目标Q值使保持不变的，一定程度降低了当前Q值和目标Q值的相关性，提高了算法稳定性。
 
-##总结
+## 总结
 
 DQN是第一个将深度学习模型与强化学习结合在一起从而成功地直接从高维的输入学习控制策略。
 
-###创新点：
+### 创新点：
 
 基于Q-Learning构造Loss Function（不算很新，过往使用线性和非线性函数拟合Q-Table时就是这样做）。
 通过experience replay（经验池）解决相关性及非静态分布问题；
 使用TargetNet解决稳定性问题。
 
-###优点：
+### 优点：
 
 算法通用性，可玩不同游戏；
 End-to-End 训练方式；
 可生产大量样本供监督学习。
 
-###缺点：
+### 缺点：
 
 无法应用于连续动作控制；
 只能处理只需短时记忆问题，无法处理需长时记忆问题（后续研究提出了使用LSTM等改进方法）；
